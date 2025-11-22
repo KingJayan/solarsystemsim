@@ -1,5 +1,5 @@
 - **Welcome to the Solar System Sim**
-
+_in alpha but wont really be updated_
 - **desc and limitations:**
 
   1. **Scale**  
@@ -20,4 +20,11 @@
      (default is 4000 instances) or reduce shadow map resolution.  
      `InstancedMesh` keeps the asteroid belt from melting your calls.
 
+  5. **HTML-ness**
+     This whole project was made in one standalone HTML file using three.js.  
+     That means some features are trickier to implement than in a full build setup,  
+     but the tradeoff is zero dependencies, instant portability, and permanent brain damage(jk).
+
 *– Jayan P*
+
+(this is my first threejs project, so dont expect it to work)
