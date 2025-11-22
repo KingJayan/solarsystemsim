@@ -20,4 +20,4 @@
      (default is 4000 instances) or reduce shadow map resolution.  
      `InstancedMesh` keeps the asteroid belt from melting your calls.
 
-- *– Jayan P*
+*– Jayan P*
