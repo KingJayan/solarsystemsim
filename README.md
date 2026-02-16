@@ -13,7 +13,7 @@ _in alpha but wont really be updated_
      - **tilt** (obliquity): tilts the planet itself (hello seasons).
 
   3. **Textures**  
-     No external textures
+     No external textures(i might add textures later-i suck at 3d modeling)
 
   4. **Performance**  
      If your GPU starts crashing out, lower the asteroid count  
