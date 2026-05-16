@@ -2,9 +2,9 @@
   <h2><code>KingJayan/solarsystemsim</code></h2>
   <p>simple solar system sim from scratch</p>
 </div>
+
 >[!IMPORTANT]
 >in alpha but wont really be updated
->
 - **limitations:**
 
   1. **Scale**  
