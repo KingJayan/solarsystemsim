@@ -1,9 +1,14 @@
-- **Welcome to the Solar System Sim**
-_in alpha but wont really be updated_
-- **desc and limitations:**
+<div align="center">
+  <h2><code>KingJayan/solarsystemsim</code></h2>
+  <p>simple solar system sim from scratch</p>
+</div>
+>[!IMPORTANT]
+>in alpha but wont really be updated
+>
+- **limitations:**
 
   1. **Scale**  
-     Space is stupid huge. If we used true scale, every planet would be a pixel crying in a sea of black.  
+     space is big. If we used true scale, every planet would be a pixel crying in a sea of black.  
      So we use a *visual scale* (see the `CONFIG` object) for visuality, while staying kinda proportional.
 
   2. **Orbits**  
