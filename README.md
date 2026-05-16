@@ -7,7 +7,7 @@
 >in alpha but wont really be updated
 - **limitations:**
 
-  1. **Scale**  
+  1. **scale**  
      space is big, so we use a *visual scale* (see the `CONFIG` object) for visuality, while staying kinda proportional
 
   2. **orbits**  
