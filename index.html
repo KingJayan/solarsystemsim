@@ -1,10 +1,7 @@
 <!--
   solar system sim
-  ------------------------------------------------------
+  -----------------------------------------------
   libraries: three.js + orbitcontrols (v0.160.0)
-  
-  most recent changes:
-  - added credit signature in bottom left
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +20,6 @@
         
         #canvas-container { width: 100vw; height: 100vh; display: block; }
 
-        /*controls container */
         #controls {
             position: absolute;
             bottom: 30px;
@@ -43,7 +39,6 @@
         input[type=range] { cursor: pointer; accent-color: var(--accent); }
         label { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
 
-        /* information panel to click on */
         #info-panel {
             position: absolute;
             top: 20px;
@@ -74,7 +69,6 @@
         }
         button.close-btn:hover { opacity: 1; }
 
-        /* HUD */
         #focus-hud {
             position: absolute;
             top: 40px;
@@ -102,7 +96,6 @@
             letter-spacing: 1px;
         }
 
-        /* credits */
         #credits {
             position: absolute;
             bottom: 30px;
@@ -182,18 +175,13 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // --- CONFIGURATION ---
         const CONFIG = {
             speedMulti: 0.3,
             planetScale: 1.2, 
             orbitScale: 38,   
             mobileCap: 1.5
         };
-
-        // --- DATA ---
-        // @param {String} Tilt - Obliquity in degrees
-        // @param {String} Ecc - Eccentricity (0=circle, 1=parabola)
-        // @param {String} Inc - inclination in deg for orbit tilt
+      
         const PLANET_DATA = [
             { 
                 name: "Sun", size: 18, dist: 0, ecc: 0, inc: 0, tilt: 0, period: 0, color: 0xffaa00, type: 'Star', glow: true,
@@ -273,7 +261,7 @@
             }
         ];
 
-        // --- SCENE SETUP ---
+        //scene setup
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
@@ -286,7 +274,6 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // camera Far plane altered to ensure Neptune/Pluto are visible
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 8000);
         camera.position.set(0, 300, 600);
 
@@ -296,7 +283,8 @@
         controls.maxDistance = 5000;
         controls.enablePan = true;
 
-        // --- textures(weird stuff) ---
+
+      
         const textureCache = {};
         function createPlanetTexture(data) {
             if (textureCache[data.name]) return textureCache[data.name];
@@ -305,11 +293,10 @@
             const ctx = canvas.getContext('2d');
             const w = canvas.width, h = canvas.height;
             
-            // fills
             ctx.fillStyle = `#${new THREE.Color(data.color).getHexString()}`;
             ctx.fillRect(0, 0, w, h);
 
-            // cool stuff - Noise/Bands
+            // noise/bands
             if (data.type === 'Gas Giant') {
                 ctx.globalCompositeOperation = 'overlay';
                 for(let i=0; i<h; i+=2) {
@@ -325,12 +312,11 @@
                     ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fill();
                 }
             }
-            // other cool stuff (possibly chatgptd)
             if (data.name === 'Earth') {
                  ctx.globalCompositeOperation = 'source-over';
-                 ctx.fillStyle = 'rgba(255,255,255,0.8)'; // Ice
+                 ctx.fillStyle = 'rgba(255,255,255,0.8)';
                  ctx.fillRect(0,0,w,40); ctx.fillRect(0,h-40,w,40);
-                 for(let i=0; i<50; i++) { // Clouds
+                 for(let i=0; i<50; i++) {
                     ctx.beginPath(); ctx.ellipse(Math.random()*w, Math.random()*h, 60, 20, 0, 0, Math.PI*2);
                     ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
                  }
@@ -359,7 +345,7 @@
             return new THREE.CanvasTexture(c);
         }
 
-        // --- BUILD SCENE ---
+      
         const solarSystem = new THREE.Group();
         scene.add(solarSystem);
         const animatedObjects = [];
@@ -371,7 +357,7 @@
         sunLight.shadow.mapSize.set(2048,2048);
         scene.add(sunLight);
 
-        // staaaaaaaaaaaaars
+        // stars(ooh shiny)
         const starGeo = new THREE.BufferGeometry();
         const starPos = [];
         for(let i=0; i<5000; i++) {
@@ -382,21 +368,18 @@
         starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
         scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({size:2, color:0xffffff, transparent:true, opacity:0.8})));
 
-        // Planets
-        PLANET_DATA.forEach(data => {
-            // Orbit Container (handles inc)
+
+      PLANET_DATA.forEach(data => {
             const orbitGroup = new THREE.Group();
-            // apply inc to the entire orbital plane
+
             orbitGroup.rotation.z = THREE.MathUtils.degToRad(data.inc);
             solarSystem.add(orbitGroup);
 
-            // calc Orbit
             const a = data.dist * CONFIG.orbitScale; 
             const e = data.ecc;
             const c = a * e; 
             const b = a * Math.sqrt(1 - e*e);
 
-            // Draw orbitasl Line
             if(a > 0) {
                 const points = [];
                 for(let i=0; i<=128; i++) {
@@ -407,15 +390,12 @@
                     new THREE.BufferGeometry().setFromPoints(points),
                     new THREE.LineBasicMaterial({ color: 0xffffff, opacity: data.name==='Pluto' || data.name.includes('Comet') ? 0.3 : 0.1, transparent: true })
                 );
-                // fix: remove rotation.x = Math.PI/2. pts are already on XZ plane.
                 orbitGroup.add(line);
             }
 
-            //Planet Positioner (Moves along orbit)
             const posGroup = new THREE.Group();
             orbitGroup.add(posGroup);
 
-            // tilt Group - axial thingy handler
             const tiltGroup = new THREE.Group();
             tiltGroup.rotation.z = THREE.MathUtils.degToRad(data.tilt); // obliquity stuff
             posGroup.add(tiltGroup);
@@ -431,18 +411,18 @@
                     map: createGlowTexture(), color: 0xffaa00, blending: THREE.AdditiveBlending, depthWrite:false 
                 }));
                 sprite.scale.set(radius*6, radius*6, 1);
-                posGroup.add(sprite); // sprite doesn't tilt
+                posGroup.add(sprite);
             } else {
                 mat = new THREE.MeshStandardMaterial({ map: createPlanetTexture(data), roughness: 0.8, metalness: 0.1 });
             }
 
             const mesh = new THREE.Mesh(geo, mat);
-            // make sure mesh has user data for raycasting
+
             mesh.userData = { data: data, type: 'planet' };
             if(data.name!=='Sun') { mesh.castShadow=true; mesh.receiveShadow=true; }
             tiltGroup.add(mesh);
 
-            //add Atmosphere
+
             if(data.atmosphere) {
                 const atmo = new THREE.Mesh(
                     new THREE.SphereGeometry(radius*1.1, 64, 64),
@@ -451,7 +431,6 @@
                 mesh.add(atmo);
             }
             
-            //Rings
             if(data.rings) {
                 const ring = new THREE.Mesh(
                     new THREE.RingGeometry(radius*1.4, radius*2.5, 64),
@@ -461,21 +440,19 @@
                 mesh.add(ring);
             }
 
-            //comet tail
             if(data.tail) {
                 const tailGeo = new THREE.ConeGeometry(radius, radius*10, 32, 1, true);
                 tailGeo.translate(0, radius*5, 0);
                 const tail = new THREE.Mesh(tailGeo, new THREE.MeshBasicMaterial({color:0x88aaff, transparent:true, opacity:0.4}));
-                tail.rotation.x = Math.PI/2; // point away from sun roughly
-                posGroup.add(tail); // to not spin with mesh
+                tail.rotation.x = Math.PI/2;
+                posGroup.add(tail);
             }
 
-            // moons(finally)
             const moonObjs = [];
             if(data.moonSystem) {
                 data.moonSystem.forEach(m => {
                     const mPiv = new THREE.Group();
-                    mesh.add(mPiv); // moons orbit the tilted planet
+                    mesh.add(mPiv);
                     
                     const mRad = m.size * CONFIG.planetScale;
                     const mD = m.dist * (radius*0.35);
@@ -502,7 +479,7 @@
 
             animatedObjects.push({
                 group: posGroup,
-                mesh: mesh, // spin
+                mesh: mesh,
                 a: a, b: b, c: c,
                 angle: Math.random()*Math.PI*2,
                 speed: data.period===0 ? 0 : (1/data.period)*0.05,
@@ -512,7 +489,7 @@
             });
         });
 
-        // Comet Belt
+        //comet belt
         const astGeo = new THREE.DodecahedronGeometry(0.3, 0);
         const astMat = new THREE.MeshStandardMaterial({color:0x666666});
         const asteroids = new THREE.InstancedMesh(astGeo, astMat, 4000);
@@ -528,7 +505,7 @@
         }
         scene.add(asteroids);
 
-        // --- INTERACTION ---
+        //interaction
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let focused = null;
@@ -539,12 +516,9 @@
             mouse.x = (e.clientX/window.innerWidth)*2-1;
             mouse.y = -(e.clientY/window.innerHeight)*2+1;
             raycaster.setFromCamera(mouse, camera);
-            // recusively check all children
             const hits = raycaster.intersectObjects(scene.children, true);
             
-            // find first hit that belongs to a planet system
             const hit = hits.find(h => {
-                // traverse up until we find the UserData or hit root
                 let obj = h.object;
                 while(obj) {
                     if(obj.userData && obj.userData.data) return true;
@@ -554,7 +528,6 @@
             });
 
             if(hit) {
-                // go back up to get the data holding object
                 let target = hit.object;
                 while(target && !target.userData.data) target = target.parent;
                 
@@ -590,7 +563,8 @@
             focused = null;
         });
 
-        // --- LOOP ---
+      
+        // main loop
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
@@ -605,18 +579,14 @@
                 const x = obj.a * Math.cos(obj.angle) + obj.c;
                 const z = obj.b * Math.sin(obj.angle);
                 
-                // apply to PosGroup
                 obj.group.position.set(x, 0, z);
 
-                //spinnnnn (on tilted axis)
                 obj.mesh.rotation.y += obj.rotSpeed;
 
-                //moons
                 if(obj.moons) {
                     obj.moons.forEach(m => m.mesh.rotation.y += m.speed * t * 100);
                 }
                 
-                // Tail orientation for comet (always away from sun approx)
                 if(obj.mesh.userData.data.name.includes('Comet')) {
                     //  logic: look at position, rotate
                 }
